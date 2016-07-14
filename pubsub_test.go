@@ -5,6 +5,7 @@
 package pubsub
 
 import (
+	"fmt"
 	"runtime"
 	"testing"
 	"time"
@@ -228,4 +229,20 @@ func (s *Suite) TestMultiClose(c *check.C) {
 	c.Check(ok, check.Equals, false)
 
 	ps.Shutdown()
+}
+
+func (s *Suite) TestUnsubDeadlock(c *check.C) {
+	ps := New(1)
+	ch := ps.Sub("t1")
+
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Print("unsub")
+		ps.Unsub(ch, "t1")
+	}()
+
+	ps.Pub("hi", "t1")
+	ps.Pub("hi2", "t1")
+	ps.Pub("hi2", "t1")
+	ps.Pub("hi2", "t1")
 }
