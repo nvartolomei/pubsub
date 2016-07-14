@@ -100,7 +100,7 @@ func (s *Suite) TestUnsubAll(c *check.C) {
 	c.Check(ok, check.Equals, false)
 
 	ps.Pub("hi", "t1")
-	m, ok = <-ch2
+	m, _ = <-ch2
 	c.Check(m, check.Equals, "hi")
 
 	ps.Shutdown()
