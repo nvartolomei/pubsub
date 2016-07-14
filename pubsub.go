@@ -164,7 +164,10 @@ func (reg *registry) add(topic string, ch chan interface{}, once bool) {
 
 func (reg *registry) send(topic string, msg interface{}) {
 	for ch, once := range reg.topics[topic] {
-		ch <- msg
+		select {
+		case ch <- msg:
+		default:
+		}
 		if once {
 			for topic := range reg.revTopics[ch] {
 				reg.remove(topic, ch)
